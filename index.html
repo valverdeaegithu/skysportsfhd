@@ -3,103 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Stream Player</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>TG_@matcheslinks</title>
     <style>
-        :root {
-            --primary: #0088cc;
-            --dark: #0f172a;
-            --light: #f8fafc;
-            --gradient: linear-gradient(135deg, #0088cc 0%, #00a8e8 100%);
-        }
-        
-        * {
+        /* General Page Styling */
+        body {
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: var(--dark);
-            color: var(--light);
-            min-height: 100vh;
+            background: linear-gradient(135deg, #242424, #3b5998);
+            color: #fff;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-        }
-        
-        .header, .footer {
-            padding: 1.5rem;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-        }
-        
-        .header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .logo {
-            position: absolute;
-            left: 2rem;
-            font-weight: 700;
-            font-size: 1.5rem;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .stream-container {
-            flex: 1;
-            display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
+            min-height: 100vh;
+            text-align: center;
         }
-        
-        .stream-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1920') center/cover;
-            filter: blur(8px) brightness(0.4);
-            z-index: -1;
-        }
-        
-        .stream {
+
+        /* Video Player Styling */
+        .player-container {
             width: 100%;
-            max-width: 1200px;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            position: relative;
-            border-radius: 12px;
+            max-width: 100%;
+            height: 100vh;
+            margin: 0;
+            border-radius: 0;
             overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            background: #000;
+            position: relative;
         }
-        
-        .stream:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px -12px rgba(0, 136, 204, 0.5);
-        }
-        
-        .stream iframe {
+
+        .player-container iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -107,230 +40,172 @@
             height: 100%;
             border: none;
         }
-        
-        .telegram-btn {
-            background: var(--gradient);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .telegram-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .social-links {
-            position: absolute;
-            right: 2rem;
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .social-link {
-            color: var(--light);
-            font-size: 1.25rem;
-            transition: all 0.3s ease;
-        }
-        
-        .social-link:hover {
-            color: var(--primary);
-            transform: translateY(-2px);
-        }
 
-        /* Popup Styles */
-        .popup-overlay {
+        /* Verification System Styling */
+        #verifyPopup {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
             justify-content: center;
             align-items: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
+            z-index: 2000;
         }
 
-        .popup-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .popup-container {
-            background: var(--dark);
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 500px;
+        .verify-content {
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 12px;
+            padding: 30px;
             width: 90%;
+            max-width: 400px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transform: scale(0.9);
-            transition: all 0.3s ease;
+            border: 2px solid #3b5998;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .popup-overlay.active .popup-container {
-            transform: scale(1);
+        .verify-content h2 {
+            color: #3b5998;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
 
-        .popup-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
+        .verify-content p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 15px;
         }
 
-        .popup-title {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .verify-timer {
+            font-size: 18px;
+            color: #facc15;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
 
-        .popup-text {
-            margin-bottom: 2rem;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.6;
-        }
-
-        .popup-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .popup-btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
+        .verify-btn {
+            background: linear-gradient(to right, #3b5998, #2d4373);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            width: 100%;
             transition: all 0.3s ease;
-            border: none;
-            font-size: 1rem;
         }
 
-        .popup-btn-primary {
-            background: var(--gradient);
-            color: white;
-        }
-
-        .popup-btn-secondary {
-            background: transparent;
-            color: var(--light);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .popup-btn-primary:hover {
+        .verify-btn:hover {
+            background: linear-gradient(to right, #2d4373, #1e2e4f);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.4);
         }
 
-        .popup-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        @media (max-width: 768px) {
-            .header, .footer {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .logo, .social-links {
-                position: static;
-            }
-            
-            .stream-container {
-                padding: 1rem;
-            }
-
-            .popup-buttons {
-                flex-direction: column;
-            }
-
-            .popup-btn {
-                width: 100%;
-            }
+        .blur-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(10px);
+            z-index: 1500;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Popup Overlay -->
-    <div class="popup-overlay active" id="popupOverlay">
-        <div class="popup-container">
-            <div class="popup-icon">
-                <i class="fab fa-telegram"></i>
-            </div>
-            <h2 class="popup-title">Join Our Telegram Channel</h2>
-            <p class="popup-text">Get instant updates, exclusive content, and be part of our community by joining our Telegram channel!</p>
-            <div class="popup-buttons">
-                <button class="popup-btn popup-btn-primary" id="joinNowBtn">
-                    <i class="fab fa-telegram"></i> Join Now
-                </button>
-                <button class="popup-btn popup-btn-secondary" id="alreadyJoinedBtn">
-                    Already Joined
-                </button>
-            </div>
+    <!-- Verification System Elements -->
+    <div class="blur-overlay" id="blurOverlay"></div>
+    <div id="verifyPopup">
+        <div class="verify-content">
+            <h2>🔒 VERIFICATION REQUIRED</h2>
+            <p>Please verify to continue watching the live stream</p>
+            <div class="verify-timer" id="verifyTimer">24:00:00</div>
+            <button class="verify-btn" id="verifyBtn">VERIFY NOW</button>
         </div>
     </div>
-    
-    <div class="header">
-        <div class="logo">ʜɪᴍᴀɴꜱʜᴜ x ᴍᴀᴛᴄʜᴇꜱ ʟɪɴᴋꜱ</div>
-        <a href="https://t.me/+iE5UX3qoGpwyNWI1" class="telegram-btn" target="_blank">
-            <i class="fab fa-telegram"></i> Join Our Telegram
-        </a>
-        <div class="social-links">
-            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
-        </div>
-    </div>
-    
-    <div class="stream-container">
-        <div class="stream">
-            <iframe src="https://sports.mafiatv.live/player.php?id=65" allowfullscreen></iframe>
-        </div>
-    </div>
-    
-    <div class="footer">
-        <a href="https://t.me/+iE5UX3qoGpwyNWI1" class="telegram-btn" target="_blank">
-            <i class="fab fa-telegram"></i> Join for More Streams
-        </a>
-    </div>
+
+    <!-- Video Player Section -->
+    <div class="player-container" id="playerContainer"></div>
 
     <script>
-        // Popup functionality
-        const popupOverlay = document.getElementById('popupOverlay');
-        const joinNowBtn = document.getElementById('joinNowBtn');
-        const alreadyJoinedBtn = document.getElementById('alreadyJoinedBtn');
+        // Verification System Functions
+        function checkVerification() {
+            const verifiedUntil = localStorage.getItem('verified_until');
+            const now = new Date();
+            
+            if (verifiedUntil && parseInt(verifiedUntil) > now.getTime()) {
+                // Verified - hide verification popup
+                document.getElementById('verifyPopup').style.display = 'none';
+                document.getElementById('blurOverlay').style.display = 'none';
+                
+                // Start countdown timer
+                startCountdown(parseInt(verifiedUntil));
+                
+                // Load the player
+                loadIframe();
+            } else {
+                // Not verified - show verification popup
+                document.getElementById('verifyPopup').style.display = 'flex';
+                document.getElementById('blurOverlay').style.display = 'block';
+            }
+        }
 
-        // Close popup when "Already Joined" is clicked
-        alreadyJoinedBtn.addEventListener('click', () => {
-            popupOverlay.classList.remove('active');
-            // You could set a cookie/localStorage here to remember the user's choice
+        function startCountdown(expireTime) {
+            const timerElement = document.getElementById('verifyTimer');
+            
+            function updateTimer() {
+                const now = new Date();
+                const diff = expireTime - now.getTime();
+                
+                if (diff <= 0) {
+                    // Verification expired
+                    localStorage.removeItem('verified_until');
+                    checkVerification();
+                    return;
+                }
+                
+                // Calculate hours, minutes, seconds
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                // Format as HH:MM:SS
+                timerElement.textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            // Update immediately and then every second
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        document.getElementById('verifyBtn').addEventListener('click', function() {
+            // Set verification for 24 hours
+            const expire = Date.now() + (24 * 60 * 60 * 1000);
+            localStorage.setItem('verified_until', expire);
+            
+            // Redirect to verification link
+            window.location.href = 'https://vplink.in/hmDC0ps';
         });
 
-        // Redirect to Telegram when "Join Now" is clicked
-        joinNowBtn.addEventListener('click', () => {
-            window.open('https://t.me/+iE5UX3qoGpwyNWI1', '_blank');
-            popupOverlay.classList.remove('active');
-        });
+        // Inject iframe dynamically with stricter sandbox to block popups
+        function loadIframe() {
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('gesture', 'media');
+            iframe.setAttribute('allow', 'encrypted-media; autoplay');
+            iframe.setAttribute('allowfullscreen', 'true');
+            iframe.setAttribute('scrolling', 'yes');
+            iframe.setAttribute('src', 'https://idx.gdplayertv.to/live-tv/sky-sports-cricket/?embed=1');
+            document.getElementById('playerContainer').appendChild(iframe);
+        }
 
-        // Optional: Show popup only if user hasn't seen it before
-        // You would need to implement cookie/localStorage check
-        // For now, it shows every time for demonstration
+        // Check verification when page loads
+        document.addEventListener('DOMContentLoaded', checkVerification);
     </script>
 </body>
 </html>
